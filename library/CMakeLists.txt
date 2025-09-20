@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 2.8.11 )
+cmake_minimum_required( VERSION 3.5 )
 
 project(dab_lib)
 set (objectName dab_lib)
