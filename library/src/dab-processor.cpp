@@ -76,6 +76,8 @@
 void	dabProcessor::start		() {
 	if (running. load ())
 	   return;
+	running. store (true);
+	myReader. setRunning (true);
 	threadHandle	= std::thread (&dabProcessor::run, this);
 }
 
@@ -101,9 +103,7 @@ int		startIndex		= -1;
 
 	isSynced	= false;
 	snr		= 0;
-	running. store (true);
 	my_ficHandler. reset ();
-	myReader. setRunning (true);
 //	my_mscHandler. start ();
 
 	try {
@@ -212,10 +212,10 @@ SyncOnPhase:
 	   FreqCorr		= std::complex<float> (0, 0);
 	   std::vector<int16_t> ibits (2 * params. get_carriers ());
 	   for (int ofdmSymbolCount = 1;
-	        ofdmSymbolCount < (uint16_t)nrBlocks; ofdmSymbolCount ++) {	
+	        ofdmSymbolCount < (uint16_t)nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data (),
 	                               T_s, coarseOffset + fineOffset);
-	      for (i = (int)T_u; i < (int)T_s; i ++) 
+	      for (i = (int)T_u; i < (int)T_s; i ++)
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 //
 //	Note that only the first few blocks are handled locally
@@ -223,7 +223,7 @@ SyncOnPhase:
 //	no delay is "knowing" that we are synchronized
 	      my_ofdmDecoder. decode (ofdmBuffer. data (),
 	                                 ofdmSymbolCount, ibits. data ());
-	      if (ofdmSymbolCount < 4) 
+	      if (ofdmSymbolCount < 4)
 	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
 	      else
 	         my_mscHandler. process_mscBlock (ibits, ofdmSymbolCount);
@@ -231,7 +231,7 @@ SyncOnPhase:
 
 //	we integrate the newly found frequency error with the
 //	existing frequency error.
-//	
+//
 //	   if (!correctionNeeded & (abs (arg (FreqCorr)) > 1.5)) {
 //	      fprintf (stderr, "resync with %d (%f)\n", startIndex, arg (FreqCorr));
 //	      goto notSynced;
@@ -290,7 +290,7 @@ void	dabProcessor:: reset		() {
 	start ();
 }
 
-void	dabProcessor::stop		() {	
+void	dabProcessor::stop		() {
 	if (running. load ()) {
 	   running. store (false);
 	   myReader. setRunning (false);
