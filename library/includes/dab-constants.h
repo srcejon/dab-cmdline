@@ -37,7 +37,7 @@
 #endif
 
 #ifndef __APPLE__
-#ifndef	__FREEBSD__
+#if !defined(__FREEBSD__) && !defined(__FreeBSD__)
 #include	<malloc.h>
 #endif
 #endif
@@ -55,7 +55,7 @@ void usleep	(int usec);
 }
 #endif
 #else
-#ifndef	__FREEBSD__
+#if !defined(__FREEBSD__) && !defined(__FreeBSD__)
 #include	"alloca.h"
 #endif
 #include	"dlfcn.h"
